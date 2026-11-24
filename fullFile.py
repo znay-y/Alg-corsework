@@ -383,8 +383,27 @@ class NaiveCDS:
         
     # Ids of all pairs at distance < CT, each pair once, no (p,p) pairs, any order. [1.2, 10 marks]
     def warnings(self, CT):
-        pass
-        
+        warnings = []
+        for i in range(len(self.bodies)):
+            for j in range(i + 1, len(self.bodies)):
+                if self.bodies[i].squareDist(self.bodies[j]) < CT**2:
+                    if (self.bodies[j].id, self.bodies[i].id) not in warnings:
+                        warnings.append((self.bodies[i].id, self.bodies[j].id))
+        return warnings
+
     # Warnings at times 0, dt, 2dt, ..., total_time: total_time/dt + 1 arrays. [1.3, 5 marks]
     def run(self, total_time, dt, CT):
-        pass
+        for i in range(0, total_time + 1, dt):
+            print(f"Time: {i}, Warnings: {self.warnings(CT)}")
+            self.advanceBodies(dt)
+
+
+#Testing data
+
+bodies = [SpaceObject("A", 0, 0, 0, 1, 0, 0),
+    SpaceObject("B", 10, 0, 0, -1, 0, 0),
+    SpaceObject("C", 0, 10, 0, 0, 0, 0),
+    SpaceObject("D", 50, 50, 50, 0, 0, -1),
+    SpaceObject("E", 0, 10, 0, 0, 0, 0)]
+N = NaiveCDS(bodies)
+print(N.run(8, 2, 4))
