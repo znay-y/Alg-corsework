@@ -397,13 +397,94 @@ class NaiveCDS:
             print(f"Time: {i}, Warnings: {self.warnings(CT)}")
             self.advanceBodies(dt)
 
+####################################################################
+# Question 2: Quadtrees in 2D square space [50 marks]
+# To solve: QuadTree.add, QuadTree.remove, QuadTree.selection, QuadTree.warnings
+####################################################################
+
+class QuadTree:
+    def __init__(self, box, CT):
+        self.root = QNode(box)
+        self.size = 0               # number of space objects in the tree
+        self.CT = CT                # collision threshold
+
+    # Add space object p (assumed inside the root's box). [2.1, 15 marks]
+    def add(self, p):
+        self.size += 1
+        self.addRec(self.root,p)
+
+    def addRec(self,node, p):
+        if node.isLeaf:
+            if node.width / 2 < self.CT or node.bodies.length() == 0:
+                node.bodies.append(p)
+                return
+            else:
+                # Split the node and redistribute the bodies
+                node.isLeaf = False
+                node.bodies = None
+                node.children = [QNode(b) for b in node.box.split4()]
+                
+        else:
+            # Add the body to the appropriate child node
+            if node.children[0].box.isIn(p):
+                self.addRec(node.children[0], p)
+            elif node.children[1].box.isIn(p):
+                self.addRec(node.children[1], p)
+            elif node.children[2].box.isIn(p):
+                self.addRec(node.children[2], p)
+            else:
+                self.addRec(node.children[3], p)
+            
+        
+    # Remove p if present, otherwise do nothing. [2.2, 15 marks]
+    def remove(self, p):
+        pass
+        
+    # All space objects adjacent to p (apart from p). [2.3, 10 marks]
+    # Assume that p is already in self.
+    def selection(self, p):
+        pass
+        
+    # Ids of all pairs at distance < CT, each pair once, no (p,p) pairs, any order. [2.4, 10 marks]
+    # Must be efficient and use selection.
+    def warnings(self):
+        pass
+        
+    def __str__(self):
+        return self.root.niceStr()
+
+    # Collect all space objects from this QuadTree and return them in an array. [given]
+    def getBodies(self):
+        A = [None]*self.size
+        QuadTree._collect(self.root, A, 0)
+        return A
+
+    # Copy the bodies stored under node into A from index i; return the next free index. [given]
+    @staticmethod
+    def _collect(node, A, i):
+        if node.isLeaf:
+            B = node.bodies.toArray()
+            for k in range(len(B)):
+                A[i] = B[k]
+                i += 1
+            return i
+        for c in node.children:
+            i = QuadTree._collect(c, A, i)
+        return i
+
+    # Draws the tree; ids=True writes the ids of the bodies. See QNode.plot. [given]
+    def plot(self, figsize=(6,6), ids=False): # figsize : (w,h) in inches
+        self.root.plot(ids=ids, figsize=figsize)
 
 #Testing data
 
-bodies = [SpaceObject("A", 0, 0, 0, 1, 0, 0),
-    SpaceObject("B", 10, 0, 0, -1, 0, 0),
-    SpaceObject("C", 0, 10, 0, 0, 0, 0),
-    SpaceObject("D", 50, 50, 50, 0, 0, -1),
-    SpaceObject("E", 0, 10, 0, 0, 0, 0)]
-N = NaiveCDS(bodies)
-print(N.run(8, 2, 4))
+P = [None]*4
+P[0] = SpaceObject("A", 50, 50)
+P[1] = SpaceObject("B", -50, 50)
+P[2] = SpaceObject("C", -50, -50)
+P[3] = SpaceObject("D", 50, -50)
+box = Box((-50,-50),(50,50),"R")
+q = QuadTree(box, 10)
+for p in P: q.add(p)
+print(q)
+q.plot()
