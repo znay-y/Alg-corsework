@@ -478,13 +478,12 @@ class QuadTree:
 
 #Testing data
 
-P = [None]*4
-P[0] = SpaceObject("A", 50, 50)
-P[1] = SpaceObject("B", -50, 50)
-P[2] = SpaceObject("C", -50, -50)
-P[3] = SpaceObject("D", 50, -50)
-box = Box((-50,-50),(50,50),"R")
-q = QuadTree(box, 10)
+P = [None]*20
+for i in range(20):
+    x = 50.0 * math.cos(i * 0.3)
+    y = 50.0 * math.sin(i * 0.3)
+    P[i] = SpaceObject(str(i), x, y)
+    
+q = QuadTree(Box((-50,-50),(50,50),"R"), 25)
 for p in P: q.add(p)
-print(q)
-q.plot()
+print(q);
