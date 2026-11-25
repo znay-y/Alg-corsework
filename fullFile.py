@@ -486,12 +486,19 @@ class QuadTree:
                 self.selectionRec(node.children[2], p, found)
             else:
                 self.selectionRec(node.children[3], p, found)
-        
-
+    
     # Ids of all pairs at distance < CT, each pair once, no (p,p) pairs, any order. [2.4, 10 marks]
     # Must be efficient and use selection.
     def warnings(self):
-        
+        warnings = []
+        bodies = self.getBodies()
+        for body in bodies:
+            selected = self.selection(body)
+            for other in selected:
+                if body.squareDist(other) < self.CT**2:
+                    if (other.id, body.id) not in warnings:
+                        warnings.append((body.id, other.id))
+        return warnings
         
     def __str__(self):
         return self.root.niceStr()
