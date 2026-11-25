@@ -449,6 +449,19 @@ class QuadTree:
             if p in node.bodies:
                 node.bodies.remove(p)
                 node.size -= 1
+                return True
+            else:
+                return False
+        else:
+            # Add the body to the appropriate child node
+            if node.children[0].box.isIn(p):
+                self.removeRec(node.children[0], p)
+            elif node.children[1].box.isIn(p):
+                self.removeRec(node.children[1], p)
+            elif node.children[2].box.isIn(p):
+                self.removeRec(node.children[2], p)
+            else:
+                self.removeRec(node.children[3], p)
         
     # All space objects adjacent to p (apart from p). [2.3, 10 marks]
     # Assume that p is already in self.
