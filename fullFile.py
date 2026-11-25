@@ -466,8 +466,28 @@ class QuadTree:
     # All space objects adjacent to p (apart from p). [2.3, 10 marks]
     # Assume that p is already in self.
     def selection(self, p):
+        found = []
+        self.selectionRec(self.root, p, found)
+        return found
+
+    def selectionRec(self, node, p, found):
+        if node.isLeaf:
+            for body in node.bodies:
+                bodies = node.bodies.toArray()
+                for body in bodies:
+                    if body != p:
+                        found.append(body)
+        else:
+            if node.children[0].box.isIn(p):
+                self.selectionRec(node.children[0], p, found)
+            elif node.children[1].box.isIn(p):
+                self.selectionRec(node.children[1], p, found)
+            elif node.children[2].box.isIn(p):
+                self.selectionRec(node.children[2], p, found)
+            else:
+                self.selectionRec(node.children[3], p, found)
         
-        
+
     # Ids of all pairs at distance < CT, each pair once, no (p,p) pairs, any order. [2.4, 10 marks]
     # Must be efficient and use selection.
     def warnings(self):
