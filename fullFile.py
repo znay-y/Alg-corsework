@@ -438,17 +438,27 @@ class QuadTree:
         
     # Remove p if present, otherwise do nothing. [2.2, 15 marks]
     def remove(self, p):
-        pass
+        if self.root.box.isIn(p):
+            self.removeRec(self.root, p)
+            self.size -= 1
+        else:
+            return
+        
+    def removeRec(self, node, p):
+        if node.isLeaf:
+            if p in node.bodies:
+                node.bodies.remove(p)
+                node.size -= 1
         
     # All space objects adjacent to p (apart from p). [2.3, 10 marks]
     # Assume that p is already in self.
     def selection(self, p):
-        pass
+        
         
     # Ids of all pairs at distance < CT, each pair once, no (p,p) pairs, any order. [2.4, 10 marks]
     # Must be efficient and use selection.
     def warnings(self):
-        pass
+        
         
     def __str__(self):
         return self.root.niceStr()
@@ -483,7 +493,7 @@ for i in range(20):
     x = 50.0 * math.cos(i * 0.3)
     y = 50.0 * math.sin(i * 0.3)
     P[i] = SpaceObject(str(i), x, y)
-    
+
 q = QuadTree(Box((-50,-50),(50,50),"R"), 25)
 for p in P: q.add(p)
 print(q);
